@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проєкт з екології - симуляція екосистеми</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.0/lucide.css">
+    <!-- Production version -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Ліва колонка - налаштування -->
+        <div class="left-panel">
+            <div class="header">
+                <div class="header-info">
+                    <h1>Симулятор Екосистеми</h1>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="toggleBtn" class="btn-primary">
+                    <i data-lucide="play"></i>
+                    <span>Старт</span>
+                </button>
+                <button id="resetBtn" class="btn-danger">
+                    <i data-lucide="rotate-ccw"></i>
+                    <span>Скинути</span>
+                </button>
+                <button id="exportBtn" class="btn-success">
+                    <i data-lucide="download"></i>
+                    <span>Експорт</span>
+                </button>
+                <button id="helpBtn" class="btn-secondary">
+                    <i data-lucide="help-circle"></i>
+                    <span>Довідка</span>
+                </button>
+            </div>
+
+            <div class="settings-panel">
+                <h3>⚙️ Налаштування</h3>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label>
+                            <span>Швидкість симуляції:</span>
+                            <span id="timeScaleValue">1x</span>
+                        </label>
+                        <input type="range" id="timeScale" min="0.1" max="10" step="0.1" value="1" class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Початкові кролики:</span>
+                            <span id="initialRabbitsValue">15</span>
+                        </label>
+                        <input type="range" id="initialRabbits" min="1" max="100" value="15" class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Початкові лиси:</span>
+                            <span id="initialFoxesValue">3</span>
+                        </label>
+                        <input type="range" id="initialFoxes" min="0" max="30" value="3" class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Швидкість голоду:</span>
+                            <span id="rabbitHungerRateValue">0.08</span>
+                        </label>
+                        <input type="range" id="rabbitHungerRate" min="0.01" max="0.5" step="0.01" value="0.08"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Шанс хвороби:</span>
+                            <span id="diseaseChanceValue">0.3%</span>
+                        </label>
+                        <input type="range" id="diseaseChance" min="0" max="0.1" step="0.001" value="0.003"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Шанс мутацій:</span>
+                            <span id="mutationChanceValue">8%</span>
+                        </label>
+                        <input type="range" id="mutationChance" min="0" max="0.5" step="0.05" value="0.08"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Швидкість росту трави:</span>
+                            <span id="plantGrowthRateValue">20</span>
+                        </label>
+                        <input type="range" id="plantGrowthRate" min="5" max="200" value="20" class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Шанс розмноження кроликів:</span>
+                            <span id="reproductionChanceRabbitValue">70%</span>
+                        </label>
+                        <input type="range" id="reproductionChanceRabbit" min="0" max="100" step="1" value="70"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Шанс розмноження лисиць:</span>
+                            <span id="reproductionChanceFoxValue">80%</span>
+                        </label>
+                        <input type="range" id="reproductionChanceFox" min="0" max="100" step="1" value="80"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Частота алеля S (швидкість):</span>
+                            <span id="initialSpeedAlleleFreqValue">50%</span>
+                        </label>
+                        <input type="range" id="initialSpeedAlleleFreq" min="0" max="1" step="0.05" value="0.5"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Частота алеля W (колір):</span>
+                            <span id="initialColorAlleleFreqValue">50%</span>
+                        </label>
+                        <input type="range" id="initialColorAlleleFreq" min="0" max="1" step="0.05" value="0.5"
+                            class="slider">
+                    </div>
+
+                    <!-- НОВІ НАЛАШТУВАННЯ ЖИТТЄВОГО ЦИКЛУ -->
+                    <div class="setting-item">
+                        <label>
+                            <span>Макс. вік кроликів:</span>
+                            <span id="rabbitMaxAgeValue">900</span>
+                        </label>
+                        <input type="range" id="rabbitMaxAge" min="500" max="3000" step="100" value="900"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Макс. вік лисиць:</span>
+                            <span id="foxMaxAgeValue">2000</span>
+                        </label>
+                        <input type="range" id="foxMaxAge" min="1000" max="5000" step="100" value="2000"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Тривалість дитинства:</span>
+                            <span id="childhoodDurationValue">100</span>
+                        </label>
+                        <input type="range" id="childhoodDuration" min="10" max="300" step="10" value="100"
+                            class="slider">
+                    </div>
+
+                    <div class="setting-item">
+                        <label>
+                            <span>Термін вагітності:</span>
+                            <span id="gestationPeriodValue">10</span>
+                        </label>
+                        <input type="range" id="gestationPeriod" min="5" max="100" step="5" value="10"
+                            class="slider">
+                    </div>
+
+                    <div class="checkbox-setting">
+                        <input type="checkbox" id="enableMutations" checked>
+                        <label for="enableMutations">Мутації швидкості</label>
+                    </div>
+
+                    <div class="checkbox-setting">
+                        <input type="checkbox" id="enableDiseases" checked>
+                        <label for="enableDiseases">Хвороби</label>
+                    </div>
+
+                    <div class="checkbox-setting">
+                        <input type="checkbox" id="enableWaterAvoidance" checked>
+                        <label for="enableWaterAvoidance">Уникання води</label>
+                    </div>
+
+                    <div class="checkbox-setting">
+                        <input type="checkbox" id="enableMendelianInheritance" checked>
+                        <label for="enableMendelianInheritance">Менделівська спадковість</label>
+                    </div>
+
+                    <div class="checkbox-setting">
+                        <input type="checkbox" id="enablePlantRegrowth" checked>
+                        <label for="enablePlantRegrowth">Відновлення трави</label>
+                    </div>
+
+                    <div class="checkbox-setting">
+                        <input type="checkbox" id="enablePopulationRecovery" checked>
+                        <label for="enablePopulationRecovery">Автоматичне відновлення популяції</label>
+                    </div>
+
+                    <div class="checkbox-setting">
+                        <input type="checkbox" id="limitPregnancies">
+                        <label for="limitPregnancies">Одноразова вагітність</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Центральна колонка - симуляція -->
+        <div class="center-panel">
+            <div class="quick-stats">
+                <div class="stat-badge">
+                    <div class="stat-value badge-rabbits" id="rabbitsBadge">0</div>
+                    <div class="stat-label">Кролики</div>
+                </div>
+                <div class="stat-badge">
+                    <div class="stat-value badge-foxes" id="foxesBadge">0</div>
+                    <div class="stat-label">Лисиці</div>
+                </div>
+                <div class="stat-badge">
+                    <div class="stat-value badge-plants" id="plantsBadge">0</div>
+                    <div class="stat-label">Трава</div>
+                </div>
+                <div class="stat-badge">
+                    <div class="stat-value badge-generation" id="generationBadge">0</div>
+                    <div class="stat-label">Покоління</div>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="simulationCanvas" width="800" height="600"></canvas>
+                <div class="simulation-speed" id="speedIndicator">1x</div>
+            </div>
+
+            <div class="legend-grid" style="margin-top: 1rem;">
+                <div class="legend-item">
+                    <div class="color-dot" style="background-color: white; border: 1px solid #9ca3af;"></div>
+                    <span>Білий кролик</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-dot" style="background-color: black; border: 1px solid #9ca3af;"></div>
+                    <span>Чорний кролик</span>
+                </div>
+                <div class="legend-item">
+                    <span> 🦊 </span>
+                    <span>Лиса</span>
+                </div>
+                <div class="legend-item">
+                    <span> 🌱 </span>
+                    <span>Трава</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-dot" style="background-color: #FF69B4;"></div>
+                    <span>Вагітна особина</span>
+                </div>
+                <div class="legend-item">
+                    <div class="color-dot" style="background-color: #7c3aed;"></div>
+                    <span>Хворий</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Права колонка - вкладки -->
+        <div class="right-panel">
+            <div class="tabs">
+                <button class="tab active" data-tab="stats">📊 Статистика</button>
+                <button class="tab" data-tab="logs">📜 Логи</button>
+                <button class="tab" data-tab="genetics">🧬 Генетика</button>
+            </div>
+
+            <!-- Вкладка Статистика -->
+            <div class="tab-content active" id="stats-tab">
+                <div class="stats-grid">
+                    <div class="stat-category">
+                        <h4>Популяція</h4>
+                        <div class="rabbit-colors">
+                            <div class="color-group">
+                                <div class="color-dot" style="background-color: white; border: 1px solid #9ca3af;">
+                                </div>
+                                <div class="stat-value" id="whiteRabbitsCount">0</div>
+                                <div class="stat-label">Білі</div>
+                            </div>
+                            <div class="color-group">
+                                <div class="color-dot" style="background-color: black; border: 1px solid #9ca3af;">
+                                </div>
+                                <div class="stat-value" id="blackRabbitsCount">0</div>
+                                <div class="stat-label">Чорні</div>
+                            </div>
+                            <div class="color-group">
+                                <div class="color-dot" style="background-color: #888888;"></div>
+                                <div class="stat-value" id="heterozygousRabbitsCount">0</div>
+                                <div class="stat-label">Гетероз.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-category">
+                        <h4>Характеристики</h4>
+                        <div class="stat-row">
+                            <span class="label">⚡ Сер. швидкість кроликів:</span>
+                            <span class="value" id="avgRabbitSpeed">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">📅 Сер. вік кроликів:</span>
+                            <span class="value" id="avgRabbitAge">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">⚡ Сер. швидкість лисиць:</span>
+                            <span class="value" id="avgFoxSpeed">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-category">
+                        <h4>Стани</h4>
+                        <div class="stat-row">
+                            <span class="label">🤰 Вагітних кроликів:</span>
+                            <span class="value" id="pregnantRabbitsCount">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">👶 Кроленят:</span>
+                            <span class="value" id="childRabbitsCount">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">🦠 Хворих:</span>
+                            <span class="value" id="sickRabbitsCount">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-category">
+                        <h4>Події</h4>
+                        <div class="stat-row">
+                            <span class="label">👶 Всього народжень:</span>
+                            <span class="value blue-text" id="totalBirths">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">💀 Всього смертей:</span>
+                            <span class="value red-text" id="totalDeaths">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">🩸 Вбито лисами:</span>
+                            <span class="value purple-text" id="totalKills">0</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="populationChart" width="300" height="150"></canvas>
+                    </div>
+
+                    <div class="stat-category">
+                        <div id="agePyramid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка Логи -->
+            <div class="tab-content" id="logs-tab">
+                <div class="log-panel">
+                    <div class="log-filters">
+                        <select id="logFilter">
+                            <option value="all">Всі події</option>
+                            <option value="birth">Народження</option>
+                            <option value="death">Смерть</option>
+                            <option value="kill">Полювання</option>
+                            <option value="disease">Хвороби</option>
+                            <option value="warning">Попередження</option>
+                            <option value="mating">Парування</option>
+                        </select>
+                        <button id="clearLogsBtn" class="icon-btn btn-secondary" title="Очистити логи">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                    <div class="logs-container" id="logsContainer">
+                        <div class="empty-logs">Події з'являтимуться тут...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка Генетика -->
+            <div class="tab-content" id="genetics-tab">
+                <div class="stats-grid">
+                    <div class="stat-category">
+                        <h4>Генетичний аналіз</h4>
+                        <div class="stat-row">
+                            <span class="label">🧬 Частота мутацій:</span>
+                            <span class="value" id="mutationFrequency">8%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">📊 Середня швидкість:</span>
+                            <span class="value" id="avgSpeedAll">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">📈 Тенденція швидкості:</span>
+                            <span class="value" id="speedTrend">→</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-category">
+                        <h4>Розподіл кольорів</h4>
+                        <div class="stat-row">
+                            <span class="label">⚪ Білі (фенотип):</span>
+                            <span class="value" id="whitePercentage">0%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">⚫ Чорні (фенотип):</span>
+                            <span class="value" id="blackPercentage">0%</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">🔘 Гетерозиготи:</span>
+                            <span class="value" id="heterozygousPercentage">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-category">
+                        <h4>Генотипи швидкості</h4>
+                        <div class="stat-row">
+                            <span class="label">🧬 SS (домінантний):</span>
+                            <span class="value" id="ssDominantCount">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">🧬 Ss (гетерозигота):</span>
+                            <span class="value" id="ssHeteroCount">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">🧬 ss (рецесивний):</span>
+                            <span class="value" id="ssRecessiveCount">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-category">
+                        <h4>Генотипи кольору</h4>
+                        <div class="stat-row">
+                            <span class="label">⚪ WW (домінантний):</span>
+                            <span class="value" id="wwDominantCount">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">⚫ Ww (гетерозигота):</span>
+                            <span class="value" id="wwHeteroCount">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">⚫ ww (рецесивний):</span>
+                            <span class="value" id="wwRecessiveCount">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-category">
+                        <h4>Репродуктивність</h4>
+                        <div class="stat-row">
+                            <span class="label">🚫 Безплідних кроликів:</span>
+                            <span class="value" id="infertileRabbitsCount">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">🚫 Безплідних лисиць:</span>
+                            <span class="value" id="infertileFoxesCount">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="label">📊 Коефіцієнт народжуваності:</span>
+                            <span class="value" id="fertilityRate">0</span>
+                        </div>
+                    </div>
+
+                    <div class="tips">
+                        <p>🧬 Генетичні закони:</p>
+                        <p>• Колір успадковується за Менделем</p>
+                        <p>• Білий (WW, Ww) домінує над чорним (ww)</p>
+                        <p>• Гетерозиготи (Ww) - білі з чорними генами</p>
+                        <p>• Мутації змінюють швидкість ±30%</p>
+                        <p>• SS/Ss - висока швидкість, ss - низька</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно довідки -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>📚 Довідка по симуляції</h2>
+
+            <div class="modal-section">
+                <h3>Основна концепція</h3>
+                <p>Симулятор моделює екосистему з двома видами: кроликами (жертви) та лисицями (хижаки). Обидва види
+                    мають генетичні ознаки, які передаються потомству та можуть мутувати. Кролики харчуються травою 🌱, а лисиці полюють на кроликів.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>Механіки симуляції</h3>
+                <ol>
+                    <li><strong>Голод та спрага:</strong> Тварини повільно втрачають енергію та воду. Коли показники
+                        падають низько, вони шукають їжу або воду.</li>
+                    <li><strong>Розмноження:</strong> Тварини можуть розмножуватися за умов:
+                        <ul>
+                            <li>Досягли репродуктивного віку</li>
+                            <li>Мають достатньо енергії</li>
+                            <li>Не знаходяться у воді</li>
+                            <li>Не є безплідними (2% шанс)</li>
+                            <li>Знайшли партнера протилежної статі</li>
+                            <li>Не обмежені одноразовою вагітністю (якщо налаштування активне)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Полювання:</strong> Лисиці полюють на кроликів. Кролики уникають лисиць та шукають
+                        траву 🌱.</li>
+                    <li><strong>Хвороби:</strong> З визначеною ймовірністю тварини можуть захворіти. Хворі тварини
+                        швидше втрачають енергію та мають знижений шанс розмноження.</li>
+                    <li><strong>Трава:</strong> Представлена емодзі 🌱. Кролики харчуються травою, що дає їм енергію. Трава відновлюється з часом.</li>
+                </ol>
+            </div>
+
+            <div class="modal-section">
+                <h3>Параметри життєвого циклу</h3>
+                <p>У налаштуваннях додано контроль над ключовими параметрами життєвого циклу:</p>
+                <ul>
+                    <li><strong>Максимальний вік:</strong> Контролює, як довго можуть жити кролики та лисиці</li>
+                    <li><strong>Тривалість дитинства:</strong> Визначає, скільки часу молоді особини залишаються "дітьми" зі зменшеними можливостями</li>
+                    <li><strong>Термін вагітності:</strong> Встановлює тривалість вагітності перед народженням потомства</li>
+                    <li><strong>Одноразова вагітність:</strong> Якщо увімкнено, особини можуть мати потомство лише один раз у житті</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>🔬 Наукові принципи у симуляції</h3>
+
+                <h4>Менделівська спадковість</h4>
+                <p>Ознака "Швидкість" успадковується за законами Менделя:</p>
+                <ul>
+                    <li><strong>Генотип</strong>: комбінація алелів (S - домінантний, s - рецесивний)</li>
+                    <li><strong>Фенотип</strong>: SS та Ss - висока швидкість, ss - низька</li>
+                    <li>Решітка Пеннета використовується для прогнозування потомства</li>
+                </ul>
+
+                <p>Ознака "Колір" успадковується за законами Менделя:</p>
+                <ul>
+                    <li><strong>Генотип</strong>: комбінація алелів (W - білий домінантний, w - чорний рецесивний)</li>
+                    <li><strong>Фенотип</strong>: WW та Ww - білий колір, ww - чорний колір</li>
+                    <li>Гетерозиготи (Ww) мають білий фенотип, але несуть рецесивний ген</li>
+                </ul>
+
+                <h4>Природний відбір</h4>
+                <ul>
+                    <li>Швидкі кролики краще уникають хижаків</li>
+                    <li>Лисиці з кращими характеристиками успішніше полюють</li>
+                    <li>Низька швидкість може бути вигідною при браку ресурсів</li>
+                </ul>
+
+                <h4>Епідеміологія та імунітет</h4>
+                <ul>
+                    <li>Хворі особини мають знижену фертильність</li>
+                    <li>Потомство від імунних батьків отримує резистентність</li>
+                    <li>Імунітет дає перевагу у виживанні, але знижує фертильність</li>
+                </ul>
+
+                <h4>Динаміка популяцій</h4>
+                <ul>
+                    <li>Ефект порятунку: при критично низькій популяції зростає фертильність</li>
+                    <li>Статево-вікова піраміда показує структуру популяції</li>
+                    <li>Критичні точки: 5 особин для кожної популяції</li>
+                </ul>
+
+                <h4>Поведінкова екологія</h4>
+                <ul>
+                    <li><strong>Тігмотаксис</strong>: рух до кордонів середовища для схованки</li>
+                    <li>Уникнення стін через "зону відштовхування"</li>
+                    <li>Адаптивне харчування при різній густині популяції</li>
+                </ul>
+
+                <h4>Екосистемна динаміка</h4>
+                <ul>
+                    <li>Авторегуляція трави 🌱 через динамічний спавн</li>
+                    <li>Взаємодія "хижак-жертва" стабілізує систему</li>
+                    <li>Генетичний дрейф у малих популяціях</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>Управління</h3>
+                <ul>
+                    <li><strong>Старт/Пауза:</strong> Запуск або призупинення симуляції</li>
+                    <li><strong>Скинути:</strong> Повернути симуляцію до початкового стану</li>
+                    <li><strong>Експорт:</strong> Зберегти статистику у JSON файлі</li>
+                    <li><strong>Налаштування:</strong> Змінити параметри симуляції, включаючи нові параметри життєвого циклу</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>Поради</h3>
+                <ul>
+                    <li>Спостерігайте за динамікою популяцій на графіку</li>
+                    <li>Експериментуйте з налаштуваннями для різних сценаріїв</li>
+                    <li>Слідкуйте за журналом подій для розуміння процесів</li>
+                    <li>При вимиранні одного виду інший також може вимерти</li>
+                    <li>Спробуйте різні частоти алелів для спостереження генетичного дрейфу</li>
+                    <li>Експериментуйте з одноразовою вагітністю для моделювання обмеженої репродукції</li>
+                    <li>Змінюйте тривалість дитинства для впливу на темпи зростання популяції</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
